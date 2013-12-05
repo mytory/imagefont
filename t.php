@@ -10,9 +10,9 @@ if( isset($_GET['s']) AND ! empty($_GET['s']) ){
 	$font_size = $_GET['s'];
 }
 
-$text = 'Pleas enter text. 텍스트를 넣어 주세요.';
+$text = 'Pleas enter text. 텍스트를 넣어 주세요. ';
 if( isset($_GET['t']) AND ! empty($_GET['t']) ){
-	$text = $_GET['t'];
+	$text = $_GET['t'] . ' ';
 }
 
 $color_code = '000000';
@@ -29,53 +29,30 @@ if( isset($_GET['c']) AND ! empty($_GET['c']) ){
 
 $image_angle = 0;
 
-// create bounding box for text (글자 들어갈 박스 크기 계산)
-$bbox = imagettfbbox($font_size, $image_angle, $font_file, $text);
-
-$upper_left_x = $bbox[0]; // -1
-$upper_left_y = $bbox[1]; // -1
-$upper_right_x = $bbox[2]; // 31
-$upper_right_y = $bbox[3]; // -1
-$lower_right_x = $bbox[4]; // 31
-$lower_right_y = $bbox[5]; // -16
-$lower_left_x = $bbox[6]; // -1
-$lower_left_y = $bbox[7]; // -16
-
-// width and height correction (너비/높이 보정)
-$width_calc = $lower_right_x - $lower_left_x;
-$height_calc = $upper_left_y - $lower_left_y;
-
-$width_addition = $width_calc * 1/50;
-$height_addition = $height_calc * 1/3;
-
-$width = $width_calc + $width_addition;
-$height = $height_calc + $height_addition;
-
-// This is our cordinates for X and Y (좌표설정)
-$x = 0;
-$y = $height_calc;
-
-
 /* Create some objects */
 $image = new Imagick();
 $draw = new ImagickDraw();
-$pixel = new ImagickPixel('transparent');
+$background = new ImagickPixel('transparent');
 
-/* New image */
-$image->newImage($width, $height, $pixel);
-
-/* Black text */
+/* text color */
 $draw->setFillColor('#' . $color_code);
 
 /* Font properties */
 $draw->setFont($font_file);
 $draw->setFontSize($font_size * 96/72);
+$draw->setStrokeAntialias(true);
+$draw->setTextAntialias(true);
+
+// Get font metrics (글자 들어갈 박스 크기 계산)
+$metrics = $image->queryFontMetrics($draw, $text);
 
 /* Create text */
-$image->annotateImage($draw, $x, $y, $image_angle, $text);
+$draw->annotation(0, $metrics['ascender'], $text);
 
-/* Give image a format */
+/* Create image */
+$image->newImage($metrics['textWidth'], $metrics['textHeight'], $background);
 $image->setImageFormat('png');
+$image->drawImage($draw);
 
 /* Output the image with headers */
 header('Content-type: image/png');
