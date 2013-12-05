@@ -1,7 +1,7 @@
 PHP image font
 ===============
 
-This script create image font using php GD lib.
+This script create image font using php Imagick lib.
 
 Usage
 -----
