@@ -1,8 +1,8 @@
 <?php
 // font file path (폰트 파일 경로)
-$font_file = 'fonts/nanumbarungothic.ttf';
-if( isset($_GET['ff']) AND ! empty($_GET['ff']) AND is_file('fonts/' . $_GET['ff'])){
-	$font_file = 'fonts/' . $_GET['ff'];
+$font_file = 'fonts/nanumbarungothic';
+if( isset($_GET['ff']) AND ! empty($_GET['ff']) AND is_file('fonts/' . $_GET['ff'] . '.ttf')){
+	$font_file = 'fonts/' . $_GET['ff'] . '.ttf';
 }
 
 $font_size = 10;
